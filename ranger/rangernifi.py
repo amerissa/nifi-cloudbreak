@@ -4,6 +4,7 @@ import sys
 import json
 import requests
 import optparse
+import uuid
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -38,7 +39,7 @@ class rangercon(object):
         else:
             return(False)
     def adduser(self, user):
-        data = {"groupIdList":None, "status":1, "userRoleList":["ROLE_USER"], "name":user, "password":"ameramer1", "firstName":user,"lastName":user,"emailAddress":""}
+        data = {"groupIdList":None, "status":1, "userRoleList":["ROLE_USER"], "name":user, "password":  uuid.uuid4().hex, "firstName":user,"lastName":user,"emailAddress":""}
         self.rest('service/xusers/secure/users', data=json.dumps(data), method='POST', formatjson=False)
 
     def executeuser(self, user):
