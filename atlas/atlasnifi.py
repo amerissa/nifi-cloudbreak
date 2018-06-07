@@ -41,7 +41,7 @@ class nificon(object):
         self.rest('nifi-api/controller-services/%s' % (processorid), data=json.dumps(data), method='put', token=self.token)
         return(processorid)
 
-    def addatlas(self, atlasurl, atlasusername, atlaspassword, kafkaurl, kakfaprotocol, kafka-kerberos-service-name-kafka, nifikerberosprincipal, nifikerberoskeytab, sslcontext):
+    def addatlas(self, atlasurl, atlasusername, atlaspassword, kafkaurl, kakfaprotocol, kafkakerberosservicenamekafka, nifikerberosprincipal, nifikerberoskeytab, sslcontext):
         data = {"revision":{"clientId":"Cloudbreak Script","version":0},"component":{"type":"org.apache.nifi.atlas.reporting.ReportLineageToAtlas","bundle":{"group":"org.apache.nifi","artifact":"nifi-atlas-nar","version":"1.5.0.3.1.1.0-35"}}}
         processorid = self.rest('nifi-api/controller/reporting-tasks', token=self.token, data = json.dumps(data), method = 'POST')['id']
         data = {"component":{"id":processorid,"name":"ReportLineageToAtlas",
@@ -50,7 +50,7 @@ class nificon(object):
         "atlas-password":"admin","atlas-conf-dir":"/etc/nifi/conf",
         "atlas-nifi-url": "%s://%s:%s/nifi" % (self.protocol, self.host, self.port),"atlas-default-cluster-name":"nifi",
         "ssl-context-service": sslcontext,"atlas-conf-create":"true","kafka-bootstrap-servers": kafkaurl,
-        "nifi-kerberos-principal":nifikerberosprincipal, "kafka-kerberos-service-name-kafka" : kafka-kerberos-service-name-kafka, "nifi-kerberos-keytab":nifikerberoskeytab}},"revision":{"clientId":"Cloudbreak Script","version":0}}
+        "nifi-kerberos-principal":nifikerberosprincipal, "kafka-kerberos-service-name-kafka" : kafkakerberosservicenamekafka, "nifi-kerberos-keytab":nifikerberoskeytab}},"revision":{"clientId":"Cloudbreak Script","version":0}}
         reply = self.rest('nifi-api/reporting-tasks/%s' % (processorid), data=json.dumps(data), method='put', token=self.token, formatjson=False)
         data = {"revision":{"clientId":"Cloudbreak Script","version":1},"component":{"id": processorid,"state":"RUNNING"}}
         self.rest('nifi-api/reporting-tasks/%s' % (processorid), method='put', data=json.dumps(data), token=self.token, formatjson=False)
@@ -79,12 +79,12 @@ def main():
     if Config.getboolean("Nifi", "kerberosenabled"):
         nifikerberoskeytab = Config.get("Nifi","nifikerberosprincipal")
         nifikerberosprincipal = Config.get("Nifi","nifikerberoskeytab")
-        kafka-kerberos-service-name-kafka = Config.get("Kafka", "kafka-kerberos-service-name-kafka")
+        kafkakerberosservicenamekafka = Config.get("Kafka", "kafka-kerberos-service-name-kafka")
     else:
         nifikerberoskeytab = None
         nifikerberosprincipal = None
-        kafka-kerberos-service-name-kafka = None
-nifi.addatlas(Config.get("Atlas", "atlasurl"), Config.get("Atlas", "atlasusername"), Config.get("Atlas","atlaspassword"), Config.get("Kafka","kafkaurl"), Config.get("Kafka","kakfaprotocol"), kafka-kerberos-service-name-kafka, nifikerberoskeytab, nifikerberosprincipal, sslcontext)
+        kafkakerberosservicenamekafka = None
+nifi.addatlas(Config.get("Atlas", "atlasurl"), Config.get("Atlas", "atlasusername"), Config.get("Atlas","atlaspassword"), Config.get("Kafka","kafkaurl"), Config.get("Kafka","kakfaprotocol"), kafkakerberosservicenamekafka, nifikerberoskeytab, nifikerberosprincipal, sslcontext)
 
 
 if __name__ == "__main__":
@@ -93,4 +93,3 @@ if __name__ == "__main__":
     except (KeyboardInterrupt, EOFError):
         print("\nAborting ... Keyboard Interrupt.")
         sys.exit(1)
- 
