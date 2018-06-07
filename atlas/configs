@@ -6,6 +6,7 @@ atlaspassword=admin
 [Kafka]
 kafkaurl=ip-10-0-103-164.ec2.internal:6667
 kakfaprotocol=PLAINTEXTSASL
+kafka-kerberos-service-name-kafka=kafka
 
 [Nifi]
 kerberosenabled=False
