@@ -57,25 +57,27 @@ class rangercon(object):
             return(False)
 
     def appendtopolicy(self, user):
-       exists = self.checkrepo()
-       if exists:
-           repoid = self.repoinfo['id']
-           policyid = [ v['id'] for v in self.rest('service/plugins/policies/service/' + str(repoid))['policies'] if v['name'] == "all - nifi-resource" ][0]
-           policyinfo = self.rest('service/plugins/policies/' + str(policyid))
-           sleep(randint(0,15))
-           if not policyinfo['policyItems']:
-               items = {"users":[user],"accesses":[{"type":"READ","isAllowed": True},{"type":"WRITE","isAllowed": True}]}
-               policyinfo['policyItems'].append(items)
-               self.rest('service/plugins/policies/' + str(policyid), method='put', data=json.dumps(policyinfo))
-           else:
-              if  user not in policyinfo['policyItems'][0]['users']:
-                   policyinfo['policyItems'][0]['users'].append(user)
-                   self.rest('service/plugins/policies/' + str(policyid), method='put', data=json.dumps(policyinfo))
-           policyinfo = self.rest('service/plugins/policies/' + str(policyid))
-              if  user not in policyinfo['policyItems'][0]['users']:
-                  sleep(randint(0,15))
-                   policyinfo['policyItems'][0]['users'].append(user)
-                   self.rest('service/plugins/policies/' + str(policyid), method='put', data=json.dumps(policyinfo))
+        exists = self.checkrepo()
+            if exists:
+                repoid = self.repoinfo['id']
+                policyid = [ v['id'] for v in self.rest('service/plugins/policies/service/' + str(repoid))['policies'] if v['name'] == "all - nifi-resource" ][0]
+                policyinfo = self.rest('service/plugins/policies/' + str(policyid))
+                sleep(randint(0,15))
+            if not policyinfo['policyItems']:
+                items = {"users":[user],"accesses":[{"type":"READ","isAllowed": True},{"type":"WRITE","isAllowed": True}]}
+                policyinfo['policyItems'].append(items)
+                self.rest('service/plugins/policies/' + str(policyid), method='put', data=json.dumps(policyinfo))
+            policyusers = self.rest('service/plugins/policies/' + str(policyid))[0]['users']
+            counter = 0
+            while user not in policyusers:
+                if counter == 5:
+                    break
+                counter += 1
+                sleep(randint(0,15))
+                policyinfo = self.rest('service/plugins/policies/' + str(policyid))
+                policyinfo['policyItems'][0]['users'].append(user)
+                self.rest('service/plugins/policies/' + str(policyid), method='put', data=json.dumps(policyinfo))
+                policyusers = self.rest('service/plugins/policies/' + str(policyid))[0]['users']
 
 
 
