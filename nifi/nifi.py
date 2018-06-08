@@ -55,6 +55,11 @@ class nificon(object):
         data = {"revision":{"clientId":"Cloudbreak Script","version":1},"component":{"id": processorid,"state":"RUNNING"}}
         self.rest('nifi-api/reporting-tasks/%s' % (processorid), method='put', data=json.dumps(data), token=self.token, formatjson=False)
 
+    def addregistry(self, url):
+        data = {"revision":{"Cloudbreak Script","version":0},"component":{"name":"registry","uri": url, "description":"Central Nifi Registry Added by Cloudbreak"}}
+        self.rest('nifi-api/controller/registry-clients', method='post', data=json.dumps(data), token=self.token)
+
+
 def main():
     parser = optparse.OptionParser(usage="usage: %prog [options]")
     parser.add_option("-S", "--protocol", dest="protocol", default="http", help="default is http, set to https if required")
@@ -76,15 +81,19 @@ def main():
         sslcontext = nifi.sslcontext(Config.get("Nifi", "sslkeystore"), Config.get("Nifi", "sslkeystorepassword"), Config.get("Nifi", "sslkeypassword"), Config.get("Nifi", "sslkeystoretype"), Config.get("Nifi", "ssltruststore"), Config.get("Nifi", "ssltrustpassword"), Config.get("Nifi", "truststoretype"))
     else:
         sslcontext = None
-    if Config.getboolean("Nifi", "kerberosenabled"):
-        nifikerberoskeytab = Config.get("Nifi","nifikerberosprincipal")
-        nifikerberosprincipal = Config.get("Nifi","nifikerberoskeytab")
-        kafkakerberosservicenamekafka = Config.get("Kafka", "kafka-kerberos-service-name-kafka")
-    else:
-        nifikerberoskeytab = None
-        nifikerberosprincipal = None
-        kafkakerberosservicenamekafka = None
-nifi.addatlas(Config.get("Atlas", "atlasurl"), Config.get("Atlas", "atlasusername"), Config.get("Atlas","atlaspassword"), Config.get("Kafka","kafkaurl"), Config.get("Kafka","kakfaprotocol"), kafkakerberosservicenamekafka, nifikerberoskeytab, nifikerberosprincipal, sslcontext)
+    if Config.getboolean("Atlas", "enabled"):
+        if Config.getboolean("Nifi", "kerberosenabled"):
+            nifikerberoskeytab = Config.get("Nifi","nifikerberosprincipal")
+            nifikerberosprincipal = Config.get("Nifi","nifikerberoskeytab")
+            kafkakerberosservicenamekafka = Config.get("Kafka", "kafka-kerberos-service-name-kafka")
+        else:
+            nifikerberoskeytab = None
+            nifikerberosprincipal = None
+            kafkakerberosservicenamekafka = None
+        nifi.addatlas(Config.get("Atlas", "atlasurl"), Config.get("Atlas", "atlasusername"), Config.get("Atlas","atlaspassword"), Config.get("Kafka","kafkaurl"), Config.get("Kafka","kakfaprotocol"), kafkakerberosservicenamekafka, nifikerberoskeytab, nifikerberosprincipal, sslcontext)
+    if Config.getboolean("NifiRegistry", "enabled"):
+        nifi.addregistry(Config.get("NifiRegistry","url"))
+
 
 
 if __name__ == "__main__":

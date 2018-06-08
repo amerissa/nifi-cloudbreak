@@ -1,4 +1,5 @@
 [Atlas]
+enabled=True
 atlasurl=http://ip-10-0-103-164.ec2.internal:21000
 atlasusername=admin
 atlaspassword=admin
@@ -20,3 +21,7 @@ sslkeystoretype=JKS
 ssltruststore=/etc/security/pki/truststore.JKS
 ssltrustpassword=amer
 truststoretype=JKS
+
+[NifiRegistry]
+enabled=False
+url=http://localhost:8080
