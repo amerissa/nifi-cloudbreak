@@ -71,6 +71,12 @@ class rangercon(object):
               if  user not in policyinfo['policyItems'][0]['users']:
                    policyinfo['policyItems'][0]['users'].append(user)
                    self.rest('service/plugins/policies/' + str(policyid), method='put', data=json.dumps(policyinfo))
+           policyinfo = self.rest('service/plugins/policies/' + str(policyid))
+              if  user not in policyinfo['policyItems'][0]['users']:
+                  sleep(randint(0,15))
+                   policyinfo['policyItems'][0]['users'].append(user)
+                   self.rest('service/plugins/policies/' + str(policyid), method='put', data=json.dumps(policyinfo))
+
 
 
 def main():
