@@ -5,6 +5,8 @@ import json
 import requests
 import optparse
 import uuid
+from random import randint
+from time import sleep
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -60,6 +62,7 @@ class rangercon(object):
            repoid = self.repoinfo['id']
            policyid = [ v['id'] for v in self.rest('service/plugins/policies/service/' + str(repoid))['policies'] if v['name'] == "all - nifi-resource" ][0]
            policyinfo = self.rest('service/plugins/policies/' + str(policyid))
+           sleep(randint(0,15))
            if not policyinfo['policyItems']:
                items = {"users":[user],"accesses":[{"type":"READ","isAllowed": True},{"type":"WRITE","isAllowed": True}]}
                policyinfo['policyItems'].append(items)
