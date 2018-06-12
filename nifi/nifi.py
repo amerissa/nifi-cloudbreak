@@ -29,7 +29,8 @@ class nificon(object):
             print("Cannot connect to Nifi")
             sys.exit(1)
         if formatjson:
-            return(json.loads(r.text)) else:
+            return(json.loads(r.text))
+        else:
             return(r.text)
 
     def sslcontext(self, keystore, keystorepassword, keypassword, keystoretype, truststore, truststorepassword, truststoretype):
@@ -56,7 +57,7 @@ class nificon(object):
         self.rest('nifi-api/reporting-tasks/%s' % (processorid), method='put', data=json.dumps(data), token=self.token, formatjson=False)
 
     def addregistry(self, url):
-        data = {"revision":{"Cloudbreak Script","version":0},"component":{"name":"registry","uri": url, "description":"Central Nifi Registry Added by Cloudbreak"}}
+        data = {"revision":{"clientId":"Cloudbreak Script","version":0},"component":{"name":"registry","uri": url, "description":"Central Nifi Registry Added by Cloudbreak"}}
         self.rest('nifi-api/controller/registry-clients', method='post', data=json.dumps(data), token=self.token)
 
 
@@ -77,7 +78,7 @@ def main():
     Config = ConfigParser.ConfigParser()
     Config.read(options.configs)
     nifi = nificon(protocol, host, port, username, password)
-   if Config.getboolean("Nifi", "sslenabled"):
+    if Config.getboolean("Nifi", "sslenabled"):
         sslcontext = nifi.sslcontext(Config.get("Nifi", "sslkeystore"), Config.get("Nifi", "sslkeystorepassword"), Config.get("Nifi", "sslkeypassword"), Config.get("Nifi", "sslkeystoretype"), Config.get("Nifi", "ssltruststore"), Config.get("Nifi", "ssltrustpassword"), Config.get("Nifi", "truststoretype"))
     else:
         sslcontext = None
