@@ -67,7 +67,7 @@ class rangercon(object):
             items = {"users":[user],"accesses":[{"type":"READ","isAllowed": True},{"type":"WRITE","isAllowed": True}]}
             policyinfo['policyItems'].append(items)
             self.rest('service/plugins/policies/' + str(policyid), method='put', data=json.dumps(policyinfo))
-        policyusers = self.rest('service/plugins/policies/' + str(policyid))[0]['users']
+        policyusers = self.rest('service/plugins/policies/' + str(policyid))['policyItems'][0]['users']
         counter = 0
         while user not in policyusers:
             if counter == 5:
@@ -77,7 +77,7 @@ class rangercon(object):
             policyinfo = self.rest('service/plugins/policies/' + str(policyid))
             policyinfo['policyItems'][0]['users'].append(user)
             self.rest('service/plugins/policies/' + str(policyid), method='put', data=json.dumps(policyinfo))
-            policyusers = self.rest('service/plugins/policies/' + str(policyid))[0]['users']
+            policyusers = self.rest('service/plugins/policies/' + str(policyid))['policyItems'][0]['users']
 
 
 

@@ -68,7 +68,7 @@ def main():
     parser.add_option("-u", "--username", dest="username", default="admin", help="Ranger Username")
     parser.add_option("-p", "--password", dest="password", default="admin", help="Ranger Password")
     parser.add_option("-H", "--host", dest="host", default="localhost", help="Ranger Host")
-    parser.add_option("-c", "--configs", dest="configs", default="./configs", help="Nifi repo to adjust")
+    parser.add_option("-c", "--configs", dest="configs", default="./configs", help="Configs file to read")
     (options, args) = parser.parse_args()
     username = options.username
     password = options.password

@@ -25,3 +25,5 @@ truststoretype=JKS
 [NifiRegistry]
 enabled=False
 url=http://localhost:8080
+username=
+password=
