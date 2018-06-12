@@ -1,4 +1,4 @@
-#!/user/bin/env python
+#!/usr/bin/env python
 import os
 import sys
 import json
@@ -15,19 +15,26 @@ class nifiregistycon(object):
         self.url = url + '/nifi-registry-api/'
         self.username = username
         self.password = password
-        self.token = self.rest('access/token', method='post', auth=(self.username, self.password), formatjson=False)
-        if not self.exists(user):
+        self.token = self.rest('access/token',  method='post', formatjson=False)
+        if not self.userexists(user):
             self.adduser(user)
 
-    def rest(self, endpoint, data=None, method='get', params=None, token=None, auth=None, headers={"Accept": "application/json", "Content-Type": "application/json"}, formatjson=True,):
-        url = self.protocol + "://" + self.host + ":" + str(self.port) + "/" + endpoint
+    def rest(self, endpoint, data=None, method='get', params=None, token=None, formatjson=True,):
+        url = self.url + endpoint
         if token:
-            headers.update({"Authorization": "Bearer %s" % (token)})
-        try:
-            r = requests.request(method, url, headers=headers, verify=False, data=data, params=params)
-        except:
-            print("Cannot connect to Nifi")
-            sys.exit(1)
+            headers = {"Authorization": "Bearer %s" % (token), "Content-Type": "application/json"}
+            try:
+                r = requests.request(method, url, headers=headers, verify=False, data=data, params=params)
+            except:
+                print("Cannot connect to Nifi")
+                sys.exit(1)
+        else:
+            try:
+                r = requests.request(method, url, auth=(self.username, self.password), verify=False, data=data, params=params)
+            except:
+                print("Cannot connect to Nifi")
+                sys.exit(1)
+
         if formatjson:
             return(json.loads(r.text))
         else:
@@ -41,8 +48,12 @@ class nifiregistycon(object):
             return(False)
 
     def adduser(self, user):
-        data = {"identity":user,"resourcePermissions":{"anyTopLevelResource":{"canRead":True,"canWrite":True,"canDelete":True},"buckets":{"canRead":True,"canWrite":True,"canDelete":True},"tenants":{"canRead":False,"canWrite":False,"canDelete":False},"policies":{"canRead":False,"canWrite" : False,"canDelete":False},"proxy":{"canRead":True,"canWrite":True,"canDelete":True}}}
-        self.rest('tenants/users', method='post', token=self.token, data=json.dumps(data))
+        data = {"identity": user, "resourcePermissions": {"anyTopLevelResource": {"canRead": True, "canWrite": True, "canDelete": True},
+                "buckets": {"canRead": True, "canWrite": True, "canDelete": True},
+                "tenants": {"canRead": False, "canWrite": False, "canDelete": False},
+                "policies": {"canRead": False, "canWrite": False, "canDelete": False},
+                "proxy": {"canRead": True, "canWrite": True, "canDelete": True}}}
+        self.rest('tenants/users', formatjson=False,  method='post', token=self.token, data=json.dumps(data))
 
 
 def main():
