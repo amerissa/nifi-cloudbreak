@@ -15,7 +15,7 @@ class nifiregistycon(object):
         self.url = url + '/nifi-registry-api/'
         self.username = username
         self.password = password
-        self.token = self.rest('access/token', method='post', auth=(self.username, self.password) formatjson=False)
+        self.token = self.rest('access/token', method='post', auth=(self.username, self.password), formatjson=False)
         if not self.exists(user):
             self.adduser(user)
 
@@ -50,6 +50,7 @@ def main():
     parser = optparse.OptionParser(usage="usage: %prog [options]")
     parser.add_option("-c", "--configs", dest="configs", default="./configs", help="Configs file to read")
     parser.add_option("-a", "--usertoadd", dest="user", default=hostname, help="User name to add, default is the system's hostname")
+    (options, args) = parser.parse_args()
     Config = ConfigParser.ConfigParser()
     Config.read(options.configs)
     if Config.getboolean("NifiRegistry", "enabled"):
