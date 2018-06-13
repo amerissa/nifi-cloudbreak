@@ -64,10 +64,10 @@ class nificon(object):
 def main():
     parser = optparse.OptionParser(usage="usage: %prog [options]")
     parser.add_option("-S", "--protocol", dest="protocol", default="http", help="default is http, set to https if required")
-    parser.add_option("-P", "--port", dest="port", default="9090", help="Set Ranger port")
-    parser.add_option("-u", "--username", dest="username", default="admin", help="Ranger Username")
-    parser.add_option("-p", "--password", dest="password", default="admin", help="Ranger Password")
-    parser.add_option("-H", "--host", dest="host", default="localhost", help="Ranger Host")
+    parser.add_option("-P", "--port", dest="port", default="9090", help="Set Nifi port")
+    parser.add_option("-u", "--username", dest="username", default="admin", help="Nifi Username")
+    parser.add_option("-p", "--password", dest="password", default="admin", help="Nifi Password")
+    parser.add_option("-H", "--host", dest="host", default="localhost", help="Nifi Host")
     parser.add_option("-c", "--configs", dest="configs", default="./configs", help="Configs file to read")
     (options, args) = parser.parse_args()
     username = options.username
