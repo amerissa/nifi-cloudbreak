@@ -17,7 +17,9 @@ class nifiregistycon(object):
         self.password = password
         self.token = self.rest('access/token',  method='post', formatjson=False)
         if not self.userexists(user):
-            self.adduser(user)
+            userid = self.adduser(user)
+            self.addtopolicy(user, userid)
+
 
     def rest(self, endpoint, data=None, method='get', params=None, token=None, formatjson=True,):
         url = self.url + endpoint
@@ -53,7 +55,17 @@ class nifiregistycon(object):
                 "tenants": {"canRead": False, "canWrite": False, "canDelete": False},
                 "policies": {"canRead": False, "canWrite": False, "canDelete": False},
                 "proxy": {"canRead": True, "canWrite": True, "canDelete": True}}}
-        self.rest('tenants/users', formatjson=False,  method='post', token=self.token, data=json.dumps(data))
+        userid = self.rest('tenants/users', method='post', token=self.token, data=json.dumps(data))['identifier']
+        return(userid)
+
+    def addtopolicy(self, user, userid):
+        policyid = [x['identifier'] for x in self.rest('policies', token=self.token) if x['resource'] == '/proxy'][0]
+        policyinfo = self.rest('policies/' + policyid, token=self.token)
+        users = [x['identity'] for x in policyinfo['users']]
+        if user not in  users:
+            userinfo = {"configurable":True, "identifier":userid, "identity":user}
+            policyinfo['users'].append(userinfo)
+            self.rest('policies/' + policyid, method=put, data=json.dumps(policyinfo), token=self.token)
 
 
 def main():
